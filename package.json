@@ -1,0 +1,50 @@
+{
+  "name": "sneaker-bot-framework",
+  "version": "0.0.11",
+  "description": "Base framework for building bots",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "scripts": {
+    "build": "tsc && cp-cli ./package.json lib/package.json",
+    "watch": "tsc --watch"
+  },
+  "peerDependency": {
+    "electron": "6.x",
+    "electron-updater": "^4.x",
+    "rxjs": "^6.x",
+    "sqlite3": "4.x",
+    "sequelize": "^5.x",
+    "sequelize-typescript": "^1.x",
+    "inversify": "^5.x",
+    "umzug": "^2.x"
+  },
+  "dependencies": {
+    "moment": "^2.24.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.30",
+    "@types/electron": "^1.6.10",
+    "@types/node": "^12.12.34",
+    "@types/umzug": "^2.2.3",
+    "@types/uuid": "^7.0.2",
+    "@types/validator": "^12.0.1",
+    "cp-cli": "^2.0.0",
+    "dts-bundle": "^0.7.3",
+    "electron-updater": "^4.2.5",
+    "inversify": "^5.0.1",
+    "rxjs": "^6.5.5",
+    "sequelize": "^5.21.6",
+    "sequelize-typescript": "^1.1.0",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "umzug": "^2.3.0",
+    "uuid": "^7.0.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

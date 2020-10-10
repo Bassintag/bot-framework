@@ -1,6 +1,6 @@
 {
   "name": "sneaker-bot-framework",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Base framework for building bots",
   "main": "./index.js",
   "types": "./index.d.ts",

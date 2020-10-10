@@ -158,7 +158,7 @@ export abstract class TaskService<T extends Resource<any>, ResultT = any, TaskT 
     private async refreshQueue(): Promise<void> {
         const max = await this.getMaxConcurrentTasks();
         for (let i = this.$running.length; i < max && this.$queue.length > 0; i += 1) {
-            const top = this.$queue[0];
+            const top = this.$queue.sort((a, b) => a.execTime - b.execTime)[0];
             if (top.execTime <= Date.now()) {
                 const task = this.$queue.shift()!.task;
                 this.$running.push(task);

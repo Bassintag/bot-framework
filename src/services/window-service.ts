@@ -33,14 +33,16 @@ export class WindowService implements IWindowService {
         await this.$onReady.pipe(
             take(1)
         ).toPromise();
-        const window = new BrowserWindow(options.windowOptions || {
+        const wo = {
             autoHideMenuBar: true,
             show: false,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,
-            }
-        });
+            },
+            ...(options.windowOptions || {})
+        };
+        const window = new BrowserWindow(wo);
         if (this.$debug) {
             window.webContents.openDevTools({mode: 'detach'});
         }

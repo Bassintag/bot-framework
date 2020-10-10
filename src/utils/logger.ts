@@ -1,6 +1,9 @@
 import moment from 'moment';
 import {inject, injectable} from 'inversify';
 import {IDENTIFIERS} from '../constants/identifiers';
+import {IEventManager} from '../events/event-manager';
+import {ILogEvent} from '../events/domain/log-event';
+import {EVENTS} from '../constants/events';
 
 export enum LogLevel {
     ALL,
@@ -36,6 +39,8 @@ export class Logger implements ILogger {
     }
 
     constructor(
+        @inject(IDENTIFIERS.EVENT_MANAGER)
+        private $eventManager: IEventManager,
         @inject(IDENTIFIERS.LOG_LEVEL)
         private $loggingLevel: LogLevel = LogLevel.ALL,
     ) {
@@ -45,6 +50,11 @@ export class Logger implements ILogger {
         if (this.$loggingLevel <= level) {
             const date = moment().format('HH:mm:ss:SSS');
             console.log(`[${date}]`, `[${title}]`, ...message);
+            this.$eventManager.publish(EVENTS.LOG, {
+                level,
+                message,
+                date,
+            } as ILogEvent);
         }
     }
 

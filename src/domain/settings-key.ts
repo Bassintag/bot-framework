@@ -9,4 +9,6 @@ export interface ISettingsKey {
     defaultValue?: string;
 
     enumValues?: string[];
+
+    meta: { [key: string]: any };
 }

@@ -30,6 +30,10 @@ export abstract class TaskProcess<T, ResultT = any, ContextT = any> implements I
     private $context?: ContextT;
     private $scriptPath?: string;
 
+    set error(val: string | undefined) {
+        this.$error = val;
+    }
+
     get error(): string | undefined {
         return this.$error;
     }
@@ -136,7 +140,10 @@ export abstract class TaskProcess<T, ResultT = any, ContextT = any> implements I
         this.$handlers[channel] = handler;
     }
 
-    protected abstract buildContext(): Promise<ContextT>
+    protected abstract buildContext(): Promise<ContextT>;
+
+    protected async validateContext(): Promise<void> {
+    }
 
     public async run(): Promise<ResultT> {
         if (this.process) {
@@ -145,7 +152,24 @@ export abstract class TaskProcess<T, ResultT = any, ContextT = any> implements I
         if (this.context == null) {
             this.$context = await this.buildContext();
         }
-        this.process = fork(this.$scriptPath!, [], {detached: true});
+        try {
+            await this.validateContext();
+        } catch (e) {
+            if (e instanceof Error) {
+                this.$error = e.message;
+            }
+            throw e;
+        }
+        this.process = fork(this.$scriptPath!, [], {
+            detached: true,
+            silent: true,
+        });
+        this.process!.stdout!.on('data', (data: Buffer) => {
+            this.$logger.info(`[script]`, data.toString());
+        });
+        this.process!.stderr!.on('data', (data: Buffer) => {
+            this.$logger.error(`[script]`, data.toString());
+        });
         fromProcessEvent<IProcessRequest<any>>(this.process, 'message').pipe(
             flatMap((request) => this.handleMessage(request)),
             takeUntil(this.$stopped),

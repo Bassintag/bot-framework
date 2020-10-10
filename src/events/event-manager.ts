@@ -1,7 +1,5 @@
-import {inject, injectable} from 'inversify';
-import {IDENTIFIERS} from '../constants/identifiers';
+import {injectable} from 'inversify';
 import {IEventPublisher} from './event-publisher';
-import {ILogger} from '../utils/logger';
 import {IEventReceiver} from './event-receiver';
 import {Observable, Subject} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
@@ -25,16 +23,12 @@ export class EventManager implements IEventManager {
 
     private readonly $eventPublishers: IEventPublisher[];
 
-    constructor(
-        @inject(IDENTIFIERS.LOGGER)
-        private readonly $logger: ILogger,
-    ) {
+    constructor() {
         this.$onEvent = new Subject<IEvent>();
         this.$eventPublishers = [];
     }
 
     public publish(eventType: string, event: any): void {
-        this.$logger.debug(`Publishing event "${eventType}"`);
         for (const publisher of this.$eventPublishers) {
             publisher.publish(eventType, event);
         }

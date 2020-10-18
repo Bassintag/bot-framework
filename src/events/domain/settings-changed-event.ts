@@ -1,6 +1,5 @@
 export interface ISettingsChangedEvent {
+	key: string;
 
-    key: string;
-
-    value: string;
+	value: string;
 }

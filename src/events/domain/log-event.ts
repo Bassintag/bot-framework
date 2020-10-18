@@ -1,10 +1,9 @@
-import {LogLevel} from '../../utils/logger';
+import { LogLevel } from '../../utils/logger';
 
 export interface ILogEvent {
+	level: LogLevel;
 
-    level: LogLevel;
+	date: string;
 
-    date: string;
-
-    message: any[];
+	message: any[];
 }

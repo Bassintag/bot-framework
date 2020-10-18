@@ -1,4 +1,3 @@
-import {Sequelize} from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 
-export interface IEntityManager extends Sequelize {
-}
+export interface IEntityManager extends Sequelize {}

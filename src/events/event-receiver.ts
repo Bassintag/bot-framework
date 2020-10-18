@@ -1,6 +1,5 @@
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface IEventReceiver {
-
-    on<T>(eventType: string): Observable<T>;
+	on<T>(eventType: string): Observable<T>;
 }

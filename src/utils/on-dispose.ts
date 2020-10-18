@@ -1,4 +1,3 @@
 export interface IOnDispose {
-
-    dispose(): Promise<void>;
+	dispose(): Promise<void>;
 }

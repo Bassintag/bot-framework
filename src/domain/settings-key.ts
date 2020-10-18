@@ -1,14 +1,13 @@
 export interface ISettingsKey {
+	displayName: string;
 
-    displayName: string;
+	key: string;
 
-    key: string;
+	type: 'string' | 'number' | 'boolean';
 
-    type: 'string' | 'number' | 'boolean';
+	defaultValue?: string;
 
-    defaultValue?: string;
+	enumValues?: string[];
 
-    enumValues?: string[];
-
-    meta: { [key: string]: any };
+	meta: { [key: string]: any };
 }

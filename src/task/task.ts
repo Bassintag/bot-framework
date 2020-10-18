@@ -1,12 +1,11 @@
 export interface ITask<ModelT = any, ResultT = any> {
+	readonly model?: ModelT;
 
-    readonly model?: ModelT;
+	readonly result?: ResultT;
 
-    readonly result?: ResultT;
+	init(model: ModelT, scriptPath: string): void;
 
-    init(model: ModelT, scriptPath: string): void;
+	run(): Promise<ResultT>;
 
-    run(): Promise<ResultT>;
-
-    stop(): void;
+	stop(): void;
 }

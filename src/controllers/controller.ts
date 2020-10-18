@@ -1,5 +1,3 @@
-import {IOnInit} from '../utils/on-init';
+import { IOnInit } from '../utils/on-init';
 
-export interface IController extends IOnInit {
-
-}
+export interface IController extends IOnInit {}

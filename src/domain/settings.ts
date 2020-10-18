@@ -1,20 +1,17 @@
 export interface ISettingsUnsetOptions {
-
-    key: string;
+	key: string;
 }
 
 export interface ISettingsGetOptions {
+	key: string;
 
-    key: string;
-
-    default?: string;
+	default?: string;
 }
 
 export interface ISettingsSetOptions {
+	key: string;
 
-    key: string;
-
-    value: string;
+	value: string;
 }
 
 export type ISettingsMap = { [key: string]: string | null };

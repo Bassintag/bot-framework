@@ -1,20 +1,18 @@
-import {IPage} from '../domain/page';
-import {IPageable} from '../domain/pageable';
-import {inject, injectable, unmanaged} from 'inversify';
-import {Model, Repository} from 'sequelize-typescript';
-import {IDENTIFIERS} from '../constants/identifiers';
-import {IEventPublisher} from '../events/event-publisher';
-import {InvalidResourceIdError} from '../errors/invalid-resource-id-error';
-import {literal, Op, WhereOptions, WhereValue} from 'sequelize';
-import {FilterOperation, IFilter, IFilters} from '../domain/filter';
+import { IPage } from '../domain/page';
+import { IPageable } from '../domain/pageable';
+import { inject, injectable, unmanaged } from 'inversify';
+import { Model, Repository } from 'sequelize-typescript';
+import { IDENTIFIERS } from '../constants/identifiers';
+import { IEventPublisher } from '../events/event-publisher';
+import { InvalidResourceIdError } from '../errors/invalid-resource-id-error';
+import { literal, Op, WhereOptions, WhereValue } from 'sequelize';
+import { FilterOperation, IFilter, IFilters } from '../domain/filter';
 
 export interface ISaveOptions {
-
 	conflictKey?: string;
 }
 
 export interface IResourceService<T> {
-
 	count(filters?: IFilters): Promise<number>;
 
 	get(id: string): Promise<T | null>;
@@ -43,7 +41,7 @@ function mapFilterToWhere(filter: IFilter): WhereOptions | WhereValue {
 				};
 			} else {
 				return {
-					[Op.eq]: filter.value
+					[Op.eq]: filter.value,
 				};
 			}
 		case FilterOperation.NOT_EQUAL:
@@ -95,27 +93,25 @@ function mapFiltersToWhere(filters?: IFilters): WhereOptions {
 
 @injectable()
 export class ResourceService<T extends Model<T>> implements IResourceService<T> {
-
 	@inject(IDENTIFIERS.EVENT_MANAGER)
 	private readonly $eventManager!: IEventPublisher;
 
 	constructor(
 		private readonly $repository: Repository<T>,
 		@unmanaged() private readonly $resourceName: string,
-		@unmanaged() private readonly $includes: Repository<any>[] = [],
-	) {
-	}
+		@unmanaged() private readonly $includes: Repository<any>[] = []
+	) {}
 
 	public async count(filters?: IFilters): Promise<number> {
 		const where = mapFiltersToWhere(filters);
-		return this.$repository.count({where});
+		return this.$repository.count({ where });
 	}
 
 	public async get(option: string | IFilters): Promise<T | null> {
 		let existing: T | null;
 		if (typeof option === 'string') {
 			existing = await this.$repository.findOne({
-				where: {'id': option},
+				where: { id: option },
 				include: this.$includes,
 			});
 		} else {
@@ -144,7 +140,7 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 			where,
 			include: this.$includes,
 		});
-		const total = await this.$repository.count({where});
+		const total = await this.$repository.count({ where });
 		return {
 			number: pageable.page,
 			size: pageable.size,
@@ -164,7 +160,7 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 				payload = resource;
 			}
 			await this.$repository.update(payload, {
-				where: {'id': resource.id},
+				where: { id: resource.id },
 			});
 			const existing = await this.get(resource.id);
 			if (!existing) {
@@ -181,9 +177,9 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 		return resource;
 	}
 
-	public async saveMany(resources: T[], {conflictKey = 'id'}: ISaveOptions = {}): Promise<T[]> {
-		const toUpdate = resources.filter(r => r.id != null);
-		const toCreate = resources.filter(r => r.id == null);
+	public async saveMany(resources: T[], { conflictKey = 'id' }: ISaveOptions = {}): Promise<T[]> {
+		const toUpdate = resources.filter((r) => r.id != null);
+		const toCreate = resources.filter((r) => r.id == null);
 		const toUpdateValues = toUpdate.map((r) => {
 			if (r.toJSON) {
 				return r.toJSON();
@@ -198,10 +194,10 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 		});
 		const raw = await Promise.all([
 			this.$repository.bulkCreate(toCreateValues),
-			Promise.all(toUpdateValues.map((r) => this.$repository.update(r, {where: {id: (r as any).id}}))),
+			Promise.all(toUpdateValues.map((r) => this.$repository.update(r, { where: { id: (r as any).id } }))),
 		]);
 		const saved = await this.getMany({
-			'id': {
+			id: {
 				operation: FilterOperation.INCLUDE,
 				value: raw.map((r) => (r as any).id),
 			},
@@ -209,10 +205,16 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 		const updated = saved.filter((s) => toUpdate.find((u) => u.id === s.id));
 		const created = saved.filter((s) => !toUpdate.find((u) => u.id === s.id));
 		if (updated.length > 0) {
-			this.$eventManager.publish(`${this.$resourceName}/updated`, updated.map((c) => c.toJSON()));
+			this.$eventManager.publish(
+				`${this.$resourceName}/updated`,
+				updated.map((c) => c.toJSON())
+			);
 		}
 		if (created.length > 0) {
-			this.$eventManager.publish(`${this.$resourceName}/created`, created.map((c) => c.toJSON()));
+			this.$eventManager.publish(
+				`${this.$resourceName}/created`,
+				created.map((c) => c.toJSON())
+			);
 		}
 		return saved;
 	}
@@ -221,7 +223,7 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 		if (resource.id) {
 			const existing = await this.get(resource.id);
 			if (existing) {
-				await this.$repository.destroy({where: {'id': existing.id}});
+				await this.$repository.destroy({ where: { id: existing.id } });
 				this.$eventManager.publish(`${this.$resourceName}/deleted`, [existing.toJSON()]);
 				return true;
 			}
@@ -231,7 +233,7 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 
 	public async deleteMany(filters: IFilters): Promise<number> {
 		const where = mapFiltersToWhere(filters);
-		const ret = this.$repository.destroy({where});
+		const ret = this.$repository.destroy({ where });
 		this.$eventManager.publish(`${this.$resourceName}/deleted`, []);
 		return ret;
 	}

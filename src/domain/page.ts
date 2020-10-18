@@ -1,14 +1,13 @@
 export interface IPage<T> {
+	number: number;
 
-    number: number;
+	size: number;
 
-    size: number;
+	count: number;
 
-    count: number;
+	total: number;
 
-    total: number;
+	totalPages: number;
 
-    totalPages: number;
-
-    items: T[];
+	items: T[];
 }

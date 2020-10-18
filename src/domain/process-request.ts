@@ -1,15 +1,13 @@
-import {IIpcRequest, IIpcResponse} from './ipc-request';
+import { IIpcRequest, IIpcResponse } from './ipc-request';
 
 export interface IProcessRequest<T> {
+	channel: string;
 
-    channel: string;
-
-    request: IIpcRequest<T>;
+	request: IIpcRequest<T>;
 }
 
 export interface IProcessResponse<T> {
+	channel: string;
 
-    channel: string;
-
-    response: IIpcResponse<T>;
+	response: IIpcResponse<T>;
 }

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Container, interfaces } from 'inversify';
 import { IDENTIFIERS } from './constants/identifiers';
-import { ModelCtor, Repository, Sequelize, SequelizeOptions } from 'sequelize-typescript';
+import { Repository, Sequelize, SequelizeOptions } from 'sequelize-typescript';
 import { Type } from './utils/type';
 import { ILogger, Logger, LogLevel } from './utils/logger';
 import { RESOURCE_NAMES } from './constants/resource-names';
@@ -31,8 +31,8 @@ import Factory = interfaces.Factory;
 
 export interface IResourceDefinition<T = any> {
 	name: string;
-	class: ModelCtor;
-	service?: Type<IResourceService<T>>;
+	class: any;
+	service?: any;
 }
 
 export interface ITaskType<T = any> {
@@ -53,7 +53,7 @@ export interface IContainerOptions {
 	migrations?: Type<IMigration>[]; // DB Migrations
 	taskTypes?: ITaskType[]; // Task Types
 	bootstrap?: Type<IOnInit>[]; // Bootstrap
-	enableUpdates?: boolean;
+	enableUpdates?: boolean; // Enable updates
 }
 
 export interface IContainerManager {

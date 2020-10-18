@@ -1,8 +1,8 @@
 export enum FilterOperation {
 	EQUAL = 'eq',
 	NOT_EQUAL = 'ne',
-	INCLUDE = 'in',
-	NOT_INCLUDE = 'ni',
+	IN = 'in',
+	NOT_IN = 'ni',
 }
 
 export type ISingleValueFilterValue = string | number;
@@ -15,12 +15,12 @@ export interface ISingleValueFilter {
 }
 
 export interface IMultiValueFilter {
-	operation: FilterOperation.INCLUDE | FilterOperation.NOT_INCLUDE;
+	operation: FilterOperation.IN | FilterOperation.NOT_IN;
 
 	value: IMultipleValuesFilterValue;
 }
 
-export type IFilter = ISingleValueFilter | IMultiValueFilter;
+export type IFilter = ISingleValueFilter | IMultiValueFilter | string | null;
 
 export interface IFilters {
 	[key: string]: IFilter;

@@ -5,8 +5,8 @@ import { Model, Repository } from 'sequelize-typescript';
 import { IDENTIFIERS } from '../constants/identifiers';
 import { IEventPublisher } from '../events/event-publisher';
 import { InvalidResourceIdError } from '../errors/invalid-resource-id-error';
-import { literal, Op, WhereOptions, WhereValue } from 'sequelize';
-import { FilterOperation, IFilter, IFilters } from '../domain/filter';
+import { FilterOperation, IFilters } from '../domain/filter';
+import { mapFiltersToWhere } from '../utils/filter';
 
 export interface ISaveOptions {
 	conflictKey?: string;
@@ -30,65 +30,6 @@ export interface IResourceService<T> {
 	delete(resource: T): Promise<boolean>;
 
 	deleteMany(filters: IFilters): Promise<number>;
-}
-
-function mapFilterToWhere(filter: IFilter): WhereOptions | WhereValue {
-	switch (filter.operation) {
-		case FilterOperation.EQUAL:
-			if (filter.value == null) {
-				return {
-					[Op.is]: undefined,
-				};
-			} else {
-				return {
-					[Op.eq]: filter.value,
-				};
-			}
-		case FilterOperation.NOT_EQUAL:
-			if (filter.value == null) {
-				return {
-					[Op.is]: literal('NOT NULL'),
-				};
-			} else {
-				return {
-					[Op.ne]: filter.value,
-				};
-			}
-		case FilterOperation.INCLUDE:
-			if (Array.isArray(filter.value)) {
-				return {
-					[Op.in]: filter.value,
-				};
-			} else {
-				return {
-					[Op.like]: `%${filter.value}%`,
-				};
-			}
-		case FilterOperation.NOT_INCLUDE:
-			if (Array.isArray(filter.value)) {
-				return {
-					[Op.notIn]: filter.value,
-				};
-			} else {
-				return {
-					[Op.notLike]: `%${filter.value}%`,
-				};
-			}
-		default:
-			throw new Error('Invalid filter operation');
-	}
-}
-
-function mapFiltersToWhere(filters?: IFilters): WhereOptions {
-	const where: WhereOptions = {};
-	if (filters) {
-		const filterKeys = Object.keys(filters);
-		for (const key of filterKeys) {
-			const filter = filters[key];
-			where[key] = mapFilterToWhere(filter);
-		}
-	}
-	return where;
 }
 
 @injectable()
@@ -198,7 +139,7 @@ export class ResourceService<T extends Model<T>> implements IResourceService<T> 
 		]);
 		const saved = await this.getMany({
 			id: {
-				operation: FilterOperation.INCLUDE,
+				operation: FilterOperation.IN,
 				value: raw.map((r) => (r as any).id),
 			},
 		});

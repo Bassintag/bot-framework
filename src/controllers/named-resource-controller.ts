@@ -10,7 +10,7 @@ export class NamedResourceController<T extends NamedResource<any>> extends Resou
 	public async search(query: ISearchQuery): Promise<IPage<object>> {
 		const page = await this.service.getPage(query, {
 			name: {
-				operation: FilterOperation.INCLUDE,
+				operation: FilterOperation.IN,
 				value: query.query,
 			},
 		});
